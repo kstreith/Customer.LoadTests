@@ -13,23 +13,8 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: PublishPipelineArtifact@1
+- task: Docker@2
   inputs:
-    targetPath: '$(Build.SourcesDirectory)/CustomerApi.Deploy/'
-    artifact: 'deploy'
-  displayName: Publish Deploy Scripts    
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
-- script: dotnet publish --configuration $(buildConfiguration) -o publish
-  displayName: 'dotnet publish $(buildConfiguration)'
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.SourcesDirectory)/CustomerApi/publish/'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/webapi.zip'
-    replaceExistingArchive: true
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(Build.ArtifactStagingDirectory)/webapi.zip'
-    artifact: 'api'
+    containerRegistry: 'customerapiloadacr'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
