@@ -13,6 +13,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.SourcesDirectory)/run-container/'
+    artifact: 'run-container'
+  displayName: Publish run-container Scripts  
 - task: Docker@2
   inputs:
     containerRegistry: 'customerapiloadacr'
