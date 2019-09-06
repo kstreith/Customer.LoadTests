@@ -16,5 +16,6 @@ steps:
 - task: Docker@2
   inputs:
     containerRegistry: 'customerapiloadacr'
+    repository: 'customer-api-load-test'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
