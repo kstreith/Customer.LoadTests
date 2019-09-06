@@ -1,1 +1,1 @@
-PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& .\run-aci-container.ps1"
+PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& .\start-aci-container.ps1"
