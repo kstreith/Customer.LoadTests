@@ -1,0 +1,1 @@
+az container delete -g customer-api-load-rg --name daily-load-test --yes
