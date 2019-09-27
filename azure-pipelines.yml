@@ -24,3 +24,4 @@ steps:
     repository: 'customer-api-load-test'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
+    tags: '$(Build.BuildNumber)'
