@@ -22,6 +22,10 @@ class ApiTasks(TaskSet):
     def createCustomer(self):
         self.client.post("/api/customer/", json=get_fake_customer(), name="Post /api/consumer")
 
+    @task(2)
+    def updateConsumer(self):
+        self.client.put("/api/customer/%s" % (random.choice(consumer_ids)), json=get_fake_customer(), name="Put /api/consumer")
+
 def get_testconsumerids(host):
     response = requests.get(host + "/api/loadtest/randomcustomer")
     responseObj = response.json()
