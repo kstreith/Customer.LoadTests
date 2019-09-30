@@ -7,11 +7,23 @@ import random
 
 def get_fake_customer():
     fake = Faker('en_US')
-    return {
+    hasAnyBirthFields = random.randint(1, 2)
+    customer = {
         "FirstName": fake.first_name(),
         "LastName": fake.last_name(),
         "EmailAddress": "test%s@loadtest.itsnull.com" % (uuid4())
     }
+    if hasAnyBirthFields == 1:
+        birthDate = fake.date_object()
+        whichBirthFields = random.randint(1, 3)
+        if whichBirthFields == 1:
+            customer["BirthDay"] = birthDate.day
+        elif whichBirthFields == 2:
+            customer["BirthMonth"] = birthDate.month
+        else:
+            customer["BirthDay"] = birthDate.day
+            customer["BirthMonth"] = birthDate.month
+    return customer
 
 def get_invalid_fake_customer():
     fake_invalid_customer = get_fake_customer()
@@ -25,11 +37,17 @@ def get_invalid_fake_customer():
     return fake_invalid_customer
 
 class ApiTasks(TaskSet):
-    @task(4)
+    @task(16)
     def getCustomer(self):
-        self.client.get("/api/customer/%s" % (random.choice(consumer_ids)) , name="Get /api/consumer")
+        self.client.get("/api/customer/%s" % (random.choice(consumer_ids)), name="Get /api/consumer")
 
     @task(1)
+    def getCustomerNotFound(self):
+        with self.client.get("/api/customer/%s" % (uuid4()), name="Get NotFound /api/consumer", catch_response=True) as response:
+            if response.status_code == 404:
+                response.success()
+
+    @task(4)
     def createCustomer(self):
         self.client.post("/api/customer/", json=get_fake_customer(), name="Post /api/consumer")
 
@@ -39,7 +57,7 @@ class ApiTasks(TaskSet):
             if response.status_code == 400:
                 response.success()
 
-    @task(2)
+    @task(8)
     def updateConsumer(self):
         self.client.put("/api/customer/%s" % (random.choice(consumer_ids)), json=get_fake_customer(), name="Put /api/consumer")
 
@@ -47,6 +65,12 @@ class ApiTasks(TaskSet):
     def updateCustomerInvalid(self):
         with self.client.put("/api/customer/%s" % (random.choice(consumer_ids)), json=get_invalid_fake_customer(), name="Put Invalid /api/customer", catch_response=True) as response:
             if response.status_code == 400:
+                response.success()
+
+    @task(1)
+    def updateCustomerNotFound(self):
+        with self.client.put("/api/customer/%s" % (uuid4()), json=get_fake_customer(), name="Put NotFound /api/customer", catch_response=True) as response:
+            if response.status_code == 404:
                 response.success()
 
 def get_testconsumerids(host):
